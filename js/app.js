@@ -2,15 +2,15 @@ var enableCollision = true;
 /**
  *Persona
  */
-var Persona = function (sprite, x, y) {
+var Persona = function (sprite, x, lane) {
     this.sprite = sprite;
     this.x = x || 0;
-    this.y = y || 0;
+    this.lane = lane || 0;
     this.flip = false;
     this.flop = false;
 };
 Persona.prototype.render = function () {
-    drawImage(Resources.get(this.sprite), this.x * 101, (this.y * 83) - 35, this.flip, this.flop);
+    drawImage(Resources.get(this.sprite), this.x * 101, (this.lane * 83) - 35, this.flip, this.flop);
 }
 Persona.prototype.xEdges = function () {
     return {
@@ -22,10 +22,11 @@ Persona.prototype.xEdges = function () {
 /**
  *Enemies
  */
-var Enemy = function (lane, speed, sprite) {
+var Enemy = function (lane, sprite) {
     Persona.call(this, sprite || 'images/enemy-bug.png', -1, lane);
-    this.speed = speed || 2;
+    this.speed = getRandomArbitrary(1, 5);
     this.flip = Math.random() >= 0.5;
+    this.x = this.flip ? 6 : -1;
 };
 Enemy.prototype = Object.create(Persona.prototype);
 Enemy.prototype.constructor = Enemy;
@@ -34,14 +35,23 @@ Enemy.prototype.update = function (dt) {
         this.x -= this.speed * dt;
 
         if (this.x < -1)
-            this.x = 6;
+            this.replace();    
     }
     else {
         this.x += this.speed * dt;
         
         if (this.x > 5)
-            this.x = -1;
+            this.replace();    
     }    
+};
+Enemy.prototype.replace = function () {
+    var i = allEnemies.indexOf(this);
+    allEnemies.push(new Enemy(this.lane));
+    
+    if (i > -1)
+        allEnemies.splice(i, 1);
+
+    delete this;
 };
 
 /**
@@ -55,7 +65,7 @@ Player.prototype = Object.create(Persona.prototype);
 Player.prototype.constructor = Player;
 Player.prototype.reset = function () {
     this.x = 2;
-    this.y = 5;
+    this.lane = 5;
 }
 Player.prototype.update = function () {
     var p = this;
@@ -63,7 +73,7 @@ Player.prototype.update = function () {
 
 if(enableCollision)    
     allEnemies.forEach(function (e) {
-        if (p.y === e.y) {
+        if (p.lane === e.lane) {
             var eXEdges = e.xEdges();
 
             if ((eXEdges.end > pXEdges.start && eXEdges.end < pXEdges.end)
@@ -75,7 +85,7 @@ if(enableCollision)
         }
     });
         
-    if (p.y === 0) {
+    if (p.lane === 0) {
         this.score++;
         this.reset();
     }
@@ -86,13 +96,13 @@ Player.prototype.handleInput = function (input) {
             this.x--;
             break;
         case 'up':
-            this.y--;
+            this.lane--;
             break;
         case 'right':
             this.x++;
             break;
         case 'down':
-            this.y++;
+            this.lane++;
             break;
     }
 
@@ -100,14 +110,14 @@ Player.prototype.handleInput = function (input) {
         this.x = 0; 
     if (this.x > 4)
         this.x = 4; 
-    if (this.y < 0)
-        this.y = 0;
-    if (this.y > 5)
-        this.y = 5;
+    if (this.lane < 0)
+        this.lane = 0;
+    if (this.lane > 5)
+        this.lane = 5;
 };
 
 var player = new Player('images/char-horn-girl.png');
-var allEnemies = [new Enemy(1), new Enemy(2, 3), new Enemy(3, 2)];
+var allEnemies = [new Enemy(1), new Enemy(2), new Enemy(3)];
 
 document.addEventListener('keyup', function(e) {
     var allowedKeys = {
@@ -119,7 +129,9 @@ document.addEventListener('keyup', function(e) {
 
     player.handleInput(allowedKeys[e.keyCode]);
 });
-
+function getRandomArbitrary(min, max) {
+  return Math.random() * (max - min) + min;
+}
 function drawImage(img, x, y, flip, flop, center, deg, width, height) {
     ctx.save();
 
