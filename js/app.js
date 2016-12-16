@@ -69,7 +69,7 @@ var Player = function (sprite, x) {
     this.initialX = initialX;
     this.finalX = this.x;
     this.finalY = this.lane;
-    this.speed = 3;
+    this.speed = 4;
 };
 Player.prototype = Object.create(Persona.prototype);
 Player.prototype.constructor = Player;

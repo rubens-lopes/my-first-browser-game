@@ -29,6 +29,60 @@ var Engine = (function(global) {
     canvas.height = 606;
     doc.body.appendChild(canvas);
 
+    var inputHandle = function (direction) {
+                var e;
+            switch (scene) {
+                case 'main':
+                    e = player;    
+                    break;
+                case 'playerSelection':
+                    e = selector;    
+                    break;
+            }
+            e.handleInput(direction);
+    };    
+    if ('ontouchstart' in document.documentElement) {
+        var keypad = doc.createElement('div');
+        var keypadUp = doc.createElement('div');
+        var keypadRight = doc.createElement('div');
+        var keypadDown = doc.createElement('div');
+        var keypadLeft = doc.createElement('div');
+        var keypadA = doc.createElement('div');
+
+        keypadUp.addEventListener('click', function () {
+            inputHandle('up');
+        });
+        keypadRight.addEventListener('click', function () {
+            inputHandle('right');
+        });
+        keypadDown.addEventListener('click', function () {
+            inputHandle('down');
+        });
+        keypadLeft.addEventListener('click', function () {
+            inputHandle('left');
+        });
+        keypadA.addEventListener('click', function () {
+            inputHandle('confirm');
+        });
+
+        keypad.width = canvas.width;
+        keypad.classList.add('keypad');
+
+        keypadUp.classList.add('keypad__button', 'keypad__button--up');
+        keypadRight.classList.add('keypad__button', 'keypad__button--right');
+        keypadDown.classList.add('keypad__button', 'keypad__button--down');
+        keypadLeft.classList.add('keypad__button', 'keypad__button--left');
+        keypadA.classList.add('keypad__button', 'keypad__button--a');
+        
+    doc.body.appendChild(keypad);
+    keypad.appendChild(keypadUp);
+    keypad.appendChild(keypadRight);
+    keypad.appendChild(keypadDown);
+    keypad.appendChild(keypadLeft);
+    keypad.appendChild(keypadA);
+    }        
+
+
     /* This function serves as the kickoff point for the game loop itself
      * and handles properly calling the update and render methods.
      */
