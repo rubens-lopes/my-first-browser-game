@@ -270,7 +270,7 @@ document.addEventListener('keyup', function(e) {
         39: 'right',
         40: 'down'
     };
-    console.log(e.keyCode);
+
     var allowedSelectorKeys = {
         37: 'left',
         39: 'right',

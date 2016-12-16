@@ -33,32 +33,32 @@ em blockquote {
     background-clip: content-box;
     background-size: contain;
     position: absolute;
-    background-repeat: none;
+    background-repeat: no-repeat;
 }
 
 .keypad__button--up {
     top: 0;
-    left: 60px;
+    left: 76px;
     width: 61px;
     height: 76px;
     background-image: url('../images/keypad-up.png');
 }
 .keypad__button--right {
-    top: 60px;
-    left: calc(76px + 30px);
+    top: 76px;
+    left: calc(76px + 61px);
     width: 76px;
     height: 61px;
     background-image: url('../images/keypad-right.png');
 }
 .keypad__button--down {
-    top: calc(76px + 30px);
-    left: 60px;
+    top: calc(76px + 61px);
+    left: 76px;
     width: 61px;
     height: 76px;
     background-image: url('../images/keypad-down.png');
 }
 .keypad__button--left {
-    top: 60px;
+    top: 76px;
     left: 0;
     width: 76px;
     height: 61px;
