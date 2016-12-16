@@ -15,22 +15,27 @@ var Persona = function (sprite, x, lane) {
 };
 Persona.prototype.render = function () {
     drawImage(Resources.get(this.sprite), this.x * 101, (this.lane * 83) - 39, this.flip, this.flop);
-}
-Persona.prototype.xEdges = function () {
-    return {
-        start: (this.x * 101),
-        end: (this.x * 101) + 101
-    };
-}
+
+    if (this.showCollisionBox) {
+    ctx.beginPath();
+    ctx.rect((this.x * 101) + this.offset.x, ((this.lane * 83) - 39) + this.offset.y, this.width, this.height);
+    ctx.closePath();    
+    ctx.stroke();
+}    
+};
 
 /**
  *Enemies
  */
 var Enemy = function (lane, sprite) {
-    Persona.call(this, sprite || 'images/' + theme + '/enemy-bug.png', -1, lane);
+    Persona.call(this, sprite || 'images/' + theme + '/enemy-bug.png', 2, lane);
     this.speed = getRandomArbitrary(1, 5);
     this.flip = Math.random() >= 0.5;
     this.x = this.flip ? 6 : -1;
+    this.width = 98;
+    this.height = 65;
+    this.offset = { x: 2, y: 78 };
+    this.showCollisionBox = false;
 };
 Enemy.prototype = Object.create(Persona.prototype);
 Enemy.prototype.constructor = Enemy;
@@ -46,7 +51,19 @@ Enemy.prototype.update = function (dt) {
         
         if (this.x > 5)
             this.replace();    
-    }    
+    }
+    if ((this.x * 101) + this.offset.x < (player.x * 101) + player.offset.x + player.width
+        && (this.x * 101) + this.offset.x + this.width > (player.x * 101) + player.offset.x
+        && ((this.lane * 83) - 39) + this.offset.y < ((player.lane * 83) - 39) + player.offset.y + player.height
+        && this.height + ((this.lane * 83) - 39) + this.offset.y > ((player.lane * 83) - 39) + player.offset.y
+        && enableCollision) {
+                    if (--player.lifes < 1) {
+                        score.clear();
+                        player.reset();
+                        return;
+                    }
+                    player.toInitialPosition();
+        }
 };
 Enemy.prototype.replace = function () {
     var i = allEnemies.indexOf(this);
@@ -70,6 +87,10 @@ var Player = function (sprite, x) {
     this.finalX = this.x;
     this.finalY = this.lane;
     this.speed = 4;
+    this.width = 30;
+    this.height = 30;
+    this.offset = { x: 35, y: 110 };
+    this.showCollisionBox = false;
 };
 Player.prototype = Object.create(Persona.prototype);
 Player.prototype.constructor = Player;
@@ -88,38 +109,16 @@ Player.prototype.render = function () {
     }
 };
 Player.prototype.update = function (dt) {
-            if (this.x < this.finalX)
-                this.x = Math.min(this.x + (this.speed * dt), this.finalX);
-            if (this.x > this.finalX)
-                this.x = Math.max(this.x - (this.speed * dt), this.finalX);
-            if (this.lane > this.finalY)
-                this.lane = Math.max(this.lane - (this.speed * dt), this.finalY);
-            if (this.lane < this.finalY)
-                this.lane = Math.min(this.lane + (this.speed * dt), this.finalY);
+    if (this.x < this.finalX)
+        this.x = Math.min(this.x + (this.speed * dt), this.finalX);
+    if (this.x > this.finalX)
+        this.x = Math.max(this.x - (this.speed * dt), this.finalX);
+    if (this.lane > this.finalY)
+        this.lane = Math.max(this.lane - (this.speed * dt), this.finalY);
+    if (this.lane < this.finalY)
+        this.lane = Math.min(this.lane + (this.speed * dt), this.finalY);
 
-        var p = this;
-    var pXEdges = p.xEdges();
-    if(enableCollision)    
-        allEnemies.forEach(function (e) {
-            if (p.lane === e.lane) {
-                var eXEdges = e.xEdges();
-
-                if ((eXEdges.end > pXEdges.start && eXEdges.end < pXEdges.end)
-                    || (eXEdges.start > pXEdges.end && eXEdges.start < pXEdges.start)) {
-
-                    if (--p.lifes < 1) {
-                        score.clear();
-                        p.reset();
-                        return;
-                    }
-                    p.toInitialPosition();
-
-                    return;
-                }
-            }
-        });
-        
-    if (p.lane === 0) {
+    if (this.lane === 0) {
         score.add(1);
         this.toInitialPosition();
     }
@@ -294,9 +293,9 @@ function getRandomArbitrary(min, max) {
 function drawImage(img, x, y, flip, flop, center, deg, width, height) {
     ctx.save();
 
-    if(typeof width === "undefined") width = img.width;
-    if(typeof height === "undefined") height = img.height;
-    if(typeof center === "undefined") center = false;
+    if(typeof width === 'undefined') width = img.width;
+    if(typeof height === 'undefined') height = img.height;
+    if(typeof center === 'undefined') center = false;
 
     // Set rotation point to center of image, instead of top/left
     if(center) {

@@ -29,6 +29,8 @@ var Engine = (function(global) {
     canvas.height = 606;
     doc.body.appendChild(canvas);
 
+ctx.lineWidth='1';
+ctx.strokeStyle='red';    
     var inputHandle = function (direction) {
                 var e;
             switch (scene) {
