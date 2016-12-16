@@ -1,5 +1,22 @@
 body {
     text-align: center;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-size: 14px;
+}
+em {
+    width: 505px;
+    display: block;
+    margin:  20px auto;    
+    line-height: 1.5;
+}
+em blockquote {
+    display: inline-block;
+    color: darkred;
+    border-radius: 3px;
+    border: 1px solid silver;
+    background-color: ghostwhite;
+    margin: 0;
+    padding: 0 5px;
 }
 
 .keypad {
