@@ -79,10 +79,12 @@ var Engine = (function(global) {
      * on the entities themselves within your app.js file).
      */
     function update(dt) {
-        updateEntities(dt);
-        // checkCollisions();
+        switch (scene) {
+            case 'main':
+                updateEntities(dt);
+                break;
+        }
     }
-
     /* This is called by the update function and loops through all of the
      * objects within your allEnemies array as defined in app.js and calls
      * their update() methods. It will then call the update function for your
@@ -95,6 +97,7 @@ var Engine = (function(global) {
             enemy.update(dt);
         });
         player.update();
+        score.update();
     }
 
     /* This function initially draws the "game level", it will then call
@@ -109,12 +112,12 @@ var Engine = (function(global) {
          * for that particular row of the game level.
          */
         var rowImages = [
-                'images/water-block.png',   // Top row is water
-                'images/stone-block.png',   // Row 1 of 3 of stone
-                'images/stone-block.png',   // Row 2 of 3 of stone
-                'images/stone-block.png',   // Row 3 of 3 of stone
-                'images/grass-block.png',   // Row 1 of 2 of grass
-                'images/grass-block.png'    // Row 2 of 2 of grass
+                'images/' + theme + '/water-block.png',   // Top row is water
+                'images/' + theme + '/stone-block.png',   // Row 1 of 3 of stone
+                'images/' + theme + '/stone-block.png',   // Row 2 of 3 of stone
+                'images/' + theme + '/stone-block.png',   // Row 3 of 3 of stone
+                'images/' + theme + '/grass-block.png',   // Row 1 of 2 of grass
+                'images/' + theme + '/grass-block.png'    // Row 2 of 2 of grass
             ],
             numRows = 6,
             numCols = 5,
@@ -136,8 +139,16 @@ var Engine = (function(global) {
                 ctx.drawImage(Resources.get(rowImages[row]), col * 101, row * 83);
             }
         }
-
-        renderEntities();
+        switch (scene) {
+            case 'main':
+                score.render();
+                renderEntities();
+                break;
+            case 'playerSelection':
+                renderPlayers();
+                break;
+        }
+        
     }
 
     /* This function is called by the render function and is called on each game
@@ -155,6 +166,13 @@ var Engine = (function(global) {
         });
     }
 
+    function renderPlayers() {
+        selector.render();
+        allPlayers.forEach(function (p) {
+            p.render();
+        });
+    }
+
     /* This function does nothing but it could have been a good place to
      * handle game reset states - maybe a new game menu or a game over screen
      * those sorts of things. It's only called once by the init() method.
@@ -168,11 +186,28 @@ var Engine = (function(global) {
      * all of these images are properly loaded our game will start.
      */
     Resources.load([
-        'images/stone-block.png',
-        'images/water-block.png',
-        'images/grass-block.png',
-        'images/enemy-bug.png',
-        'images/char-horn-girl.png'
+        'images/' + theme + '/stone-block.png',
+        'images/' + theme + '/water-block.png',
+        'images/' + theme + '/grass-block.png',
+        'images/' + theme + '/enemy-bug.png',
+        'images/' + theme + '/char-boy.png',
+        'images/' + theme + '/char-cat-girl.png',
+        'images/' + theme + '/char-horn-girl.png',
+        'images/' + theme + '/char-pink-girl.png',
+        'images/' + theme + '/char-princess-girl.png',
+        'images/' + theme + '/Selector.png',
+        'images/' + theme + '/number0.png',
+        'images/' + theme + '/number1.png',
+        'images/' + theme + '/number2.png',
+        'images/' + theme + '/number3.png',
+        'images/' + theme + '/number4.png',
+        'images/' + theme + '/number5.png',
+        'images/' + theme + '/number6.png',
+        'images/' + theme + '/number7.png',
+        'images/' + theme + '/number8.png',
+        'images/' + theme + '/number9.png',
+        'images/' + theme + '/textGameOver.png',
+        'images/' + theme + '/Heart.png',
     ]);
     Resources.onReady(init);
 

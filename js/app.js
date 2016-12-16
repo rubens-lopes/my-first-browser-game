@@ -1,4 +1,8 @@
 var enableCollision = true;
+var initialScore = 0;
+var initialLifes = 3;
+var theme = 'default';
+
 /**
  *Persona
  */
@@ -23,7 +27,7 @@ Persona.prototype.xEdges = function () {
  *Enemies
  */
 var Enemy = function (lane, sprite) {
-    Persona.call(this, sprite || 'images/enemy-bug.png', -1, lane);
+    Persona.call(this, sprite || 'images/' + theme + '/enemy-bug.png', -1, lane);
     this.speed = getRandomArbitrary(1, 5);
     this.flip = Math.random() >= 0.5;
     this.x = this.flip ? 6 : -1;
@@ -57,16 +61,28 @@ Enemy.prototype.replace = function () {
 /**
  *Player
  */
-var Player = function (sprite) {
-    Persona.call(this, sprite, 2, 5);
-    this.score = 0;
+var Player = function (sprite, x) {
+    var initialX = isNaN(x) ? 2 : x;
+    
+    Persona.call(this, sprite, initialX, 5);
+    this.lifes = initialLifes;
+    this.initialX = initialX;
+    
 };
 Player.prototype = Object.create(Persona.prototype);
 Player.prototype.constructor = Player;
-Player.prototype.reset = function () {
+Player.prototype.toInitialPosition = function () {
     this.x = 2;
     this.lane = 5;
 }
+Player.prototype.render = function () {
+    Persona.prototype.render.call(this);
+    var sprite = Resources.get('images/' + theme + '/Heart.png');
+
+    for (var i = 0; i < this.lifes; i++) {
+        drawImage(sprite, i * sprite.width, 0);
+    }
+};
 Player.prototype.update = function () {
     var p = this;
     var pXEdges = p.xEdges();
@@ -78,16 +94,22 @@ if(enableCollision)
 
             if ((eXEdges.end > pXEdges.start && eXEdges.end < pXEdges.end)
                 || (eXEdges.start > pXEdges.end && eXEdges.start < pXEdges.start)) {
-                    this.score = 0;
+
+                if (--p.lifes < 1) {
+                    score.clear();
                     p.reset();
+                    return;
+                }
+                p.toInitialPosition();
+
                 return;
                }
         }
     });
         
     if (p.lane === 0) {
-        this.score++;
-        this.reset();
+        score.add(1);
+        this.toInitialPosition();
     }
 };
 Player.prototype.handleInput = function (input) {
@@ -115,9 +137,117 @@ Player.prototype.handleInput = function (input) {
     if (this.lane > 5)
         this.lane = 5;
 };
+Player.prototype.reset = function () {
+    this.lifes = initialLifes;
+    this.x = this.initialX;
+    this.lane = 5;
+    scene = 'playerSelection';
+};
 
-var player = new Player('images/char-horn-girl.png');
-var allEnemies = [new Enemy(1), new Enemy(2), new Enemy(3)];
+/**
+ *Score
+ */
+var Score = function () { 
+    this.score = initialScore;
+    this.highScore = 0;
+    this.charsToPrint = [];
+}
+Score.prototype.render = function () {
+    if (this.charsToPrint.length === 0)
+        return;    
+    
+    var lastWidth = 0;
+    this.charsToPrint.forEach(function (c) {
+        var image = Resources.get(c);
+        drawImage(image, ctx.canvas.width - image.width - lastWidth, 0);
+        lastWidth = image.width;
+    }, this);
+};
+Score.prototype.update = function () {
+    var s = this;
+
+    s.charsToPrint = [];
+    var chars = s.score.toString().split('');
+
+    chars.forEach(function (c) {
+        s.charsToPrint.unshift('images/' + theme + '/number' + c + '.png');
+    });
+};
+Score.prototype.clear = function () {
+    if (this.score > this.highScore)
+        this.highScore = this.score;
+    
+    this.score = initialScore;
+};
+Score.prototype.add = function (points) {
+    this.score += points;
+};
+
+/**
+ *Selector
+ */
+var Selector = function () {
+    this.x = 0;
+    this.y = 5;
+}
+Selector.prototype.render = function () {
+    ctx.drawImage(Resources.get('images/' + theme + '/Selector.png') , this.x * 101, (this.y * 83) - 35);
+};
+
+Selector.prototype.handleInput = function (input) {
+    switch (input) {
+        case 'left':
+            this.x--;
+            break;
+        case 'right':
+            this.x++;
+            break;
+        case 'confirm':
+            startScene('main', this.x);    
+            break;
+    }
+
+    if (this.x < 0)
+        this.x = 0; 
+    if (this.x > 4)
+        this.x = 4; 
+};
+/**
+ *Init & helpers
+ */
+var player;
+var allEnemies;
+var score;
+
+var selector = new Selector();
+var scene = 'playerSelection';
+var allPlayers = [
+        new Player('images/' + theme + '/char-boy.png', 0),
+        new Player('images/' + theme + '/char-cat-girl.png', 1),
+        new Player('images/' + theme + '/char-horn-girl.png', 2),
+        new Player('images/' + theme + '/char-pink-girl.png', 3),
+        new Player('images/' + theme + '/char-princess-girl.png', 4)
+    ];
+
+function startScene(sc, x) {
+    allEnemies = [
+        new Enemy(1),
+        new Enemy(2),
+        new Enemy(3)
+    ];
+    score = new Score();
+    player = allPlayers[x];
+    player.toInitialPosition();
+
+    // delete selector;
+    // allPlayers.forEach(function (e, i) {
+    //     if (i !== x)
+    //         delete e;
+    // });
+    // delete allPlayers;
+
+    scene = sc;
+};
 
 document.addEventListener('keyup', function(e) {
     var allowedKeys = {
@@ -127,7 +257,21 @@ document.addEventListener('keyup', function(e) {
         40: 'down'
     };
 
-    player.handleInput(allowedKeys[e.keyCode]);
+    var allowedSelectorKeys = {
+        37: 'left',
+        39: 'right',
+        13: 'confirm',
+        32: 'confirm',
+    };
+
+    switch (scene) {
+        case 'main':
+            player.handleInput(allowedKeys[e.keyCode]);
+            break;
+        case 'playerSelection':
+            selector.handleInput(allowedSelectorKeys[e.keyCode]);
+            break;
+    }    
 });
 function getRandomArbitrary(min, max) {
   return Math.random() * (max - min) + min;
