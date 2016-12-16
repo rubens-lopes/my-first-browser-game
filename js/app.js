@@ -2,7 +2,11 @@ var enableCollision = true;
 var initialScore = 0;
 var initialLifes = 3;
 var theme = 'default';
-
+var themes = [
+    {id: 'default', name: 'Default' },
+    {id: 'sepia', name: 'Sepia' },
+    // {id: 'theme-1', name: 'Theme 1' },
+];
 /**
  *Persona
  */
@@ -14,7 +18,7 @@ var Persona = function (sprite, x, lane) {
     this.flop = false;
 };
 Persona.prototype.render = function () {
-    drawImage(Resources.get(this.sprite), this.x * 101, (this.lane * 83) - 39, this.flip, this.flop);
+    drawImage(Resources.get(this.sprite.replace('@theme', theme)), this.x * 101, (this.lane * 83) - 39, this.flip, this.flop);
 
     if (this.showCollisionBox) {
     ctx.beginPath();
@@ -28,8 +32,8 @@ Persona.prototype.render = function () {
  *Enemies
  */
 var Enemy = function (lane, sprite) {
-    Persona.call(this, sprite || 'images/' + theme + '/enemy-bug.png', 2, lane);
-    this.speed = getRandomArbitrary(1, 5);
+    Persona.call(this, sprite || 'images/@theme/enemy-bug.png', 2, lane);
+    this.speed = getRandomArbitrary(1, 4);
     this.flip = Math.random() >= 0.5;
     this.x = this.flip ? 6 : -1;
     this.width = 98;
@@ -82,6 +86,7 @@ var Player = function (sprite, x) {
     var initialX = isNaN(x) ? 2 : x;
     
     Persona.call(this, sprite, initialX, 5);
+    this.lifeSprite = 'images/@theme/heart.png';
     this.lifes = initialLifes;
     this.initialX = initialX;
     this.finalX = this.x;
@@ -102,8 +107,8 @@ Player.prototype.toInitialPosition = function () {
 }
 Player.prototype.render = function () {
     Persona.prototype.render.call(this);
-    var sprite = Resources.get('images/' + theme + '/heart.png');
 
+    var sprite = Resources.get(this.lifeSprite.replace('@theme', theme));  
     for (var i = 0; i < this.lifes; i++) {
         drawImage(sprite, i * sprite.width, 0);
     }
@@ -183,7 +188,7 @@ Score.prototype.update = function () {
     var chars = s.score.toString().split('');
 
     chars.forEach(function (c) {
-        s.charsToPrint.unshift('images/' + theme + '/number' + c + '.png');
+        s.charsToPrint.unshift(('images/@theme/number' + c + '.png').replace('@theme', theme));
     });
 };
 Score.prototype.clear = function () {
@@ -206,7 +211,7 @@ var Selector = function () {
     this.speed = 4;
 }
 Selector.prototype.render = function () {
-    ctx.drawImage(Resources.get('images/' + theme + '/selector.png') , this.x * 101, (this.y * 83) - 39);
+    ctx.drawImage(Resources.get('images/@theme/selector.png'.replace('@theme', theme)) , this.x * 101, (this.y * 83) - 39);
 };
 Selector.prototype.update = function (dt) {
             if (this.x < this.finalX)
@@ -243,12 +248,51 @@ var score;
 var selector = new Selector();
 var scene = 'playerSelection';
 var allPlayers = [
-        new Player('images/' + theme + '/char-boy.png', 0),
-        new Player('images/' + theme + '/char-cat-girl.png', 1),
-        new Player('images/' + theme + '/char-horn-girl.png', 2),
-        new Player('images/' + theme + '/char-pink-girl.png', 3),
-        new Player('images/' + theme + '/char-princess-girl.png', 4)
+        new Player('images/@theme/char-boy.png', 0),
+        new Player('images/@theme/char-cat-girl.png', 1),
+        new Player('images/@theme/char-horn-girl.png', 2),
+        new Player('images/@theme/char-pink-girl.png', 3),
+        new Player('images/@theme/char-princess-girl.png', 4)
     ];
+var assetsList = [];
+var assetsListThemeless = [
+    'images/@theme/stone-block.png',
+    'images/@theme/water-block.png',
+    'images/@theme/grass-block.png',
+    'images/@theme/enemy-bug.png',
+    'images/@theme/char-boy.png',
+    'images/@theme/char-cat-girl.png',
+    'images/@theme/char-horn-girl.png',
+    'images/@theme/char-pink-girl.png',
+    'images/@theme/char-princess-girl.png',
+    'images/@theme/selector.png',
+    'images/@theme/number0.png',
+    'images/@theme/number1.png',
+    'images/@theme/number2.png',
+    'images/@theme/number3.png',
+    'images/@theme/number4.png',
+    'images/@theme/number5.png',
+    'images/@theme/number6.png',
+    'images/@theme/number7.png',
+    'images/@theme/number8.png',
+    'images/@theme/number9.png',
+    'images/@theme/heart.png',
+];
+
+function setTheme(t) {
+    assetsList = [];
+    Resources.onReady(function () {
+        theme = t;
+    });
+
+    assetsListThemeless.forEach(function (r) {
+        assetsList.push(r.replace('@theme', t));
+    });
+    
+    Resources.load(assetsList);
+};
+
+setTheme(theme);
 
 function startScene(sc, x) {
     allEnemies = [

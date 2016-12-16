@@ -12,15 +12,26 @@
      * an array of strings pointing to image files or a string for a single
      * image. It will then call our private image loading function accordingly.
      */
+    function execCallbacks() {
+        while (readyCallbacks.length > 0) {
+            var func = readyCallbacks.pop();
+            func();
+        }
+    };
+
     function load(urlOrArr) {
         if(urlOrArr instanceof Array) {
             /* If the developer passed in an array of images
              * loop through each value and call our image
              * loader on that image file
              */
-            urlOrArr.forEach(function(url) {
-                _load(url);
+            var allAlreadyLoaded = true;
+            urlOrArr.forEach(function (url) {
+                var img = _load(url);
+                allAlreadyLoaded = allAlreadyLoaded && typeof _load(url) === 'object';
             });
+            if (allAlreadyLoaded)
+                execCallbacks();
         } else {
             /* The developer did not pass an array to this function,
              * assume the value is a string and call our image loader
@@ -55,9 +66,8 @@
                 /* Once the image is actually loaded and properly cached,
                  * call all of the onReady() callbacks we have defined.
                  */
-                if(isReady()) {
-                    readyCallbacks.forEach(function(func) { func(); });
-                }
+                if(isReady()) 
+                execCallbacks();
             };
 
             /* Set the initial cache value to false, this will change when

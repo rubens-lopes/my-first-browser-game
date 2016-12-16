@@ -83,7 +83,21 @@ ctx.strokeStyle='red';
     keypad.appendChild(keypadLeft);
     keypad.appendChild(keypadA);
     }        
+    var themesList = doc.createElement('ul');
+    themesList.classList.add('theme-list');
+    
+    themes.forEach(function (t) {
+        var item = doc.createElement('li');
+        item.classList.add('theme-list__item');
+        item.innerHTML = t.name;
+        item.addEventListener('click', function () {
+            setTheme(t.id); 
+        });
 
+        themesList.appendChild(item);
+    });
+
+    doc.body.appendChild(themesList);
 
     /* This function serves as the kickoff point for the game loop itself
      * and handles properly calling the update and render methods.
@@ -244,29 +258,6 @@ ctx.strokeStyle='red';
      * draw our game level. Then set init as the callback method, so that when
      * all of these images are properly loaded our game will start.
      */
-    Resources.load([
-        'images/' + theme + '/stone-block.png',
-        'images/' + theme + '/water-block.png',
-        'images/' + theme + '/grass-block.png',
-        'images/' + theme + '/enemy-bug.png',
-        'images/' + theme + '/char-boy.png',
-        'images/' + theme + '/char-cat-girl.png',
-        'images/' + theme + '/char-horn-girl.png',
-        'images/' + theme + '/char-pink-girl.png',
-        'images/' + theme + '/char-princess-girl.png',
-        'images/' + theme + '/selector.png',
-        'images/' + theme + '/number0.png',
-        'images/' + theme + '/number1.png',
-        'images/' + theme + '/number2.png',
-        'images/' + theme + '/number3.png',
-        'images/' + theme + '/number4.png',
-        'images/' + theme + '/number5.png',
-        'images/' + theme + '/number6.png',
-        'images/' + theme + '/number7.png',
-        'images/' + theme + '/number8.png',
-        'images/' + theme + '/number9.png',
-        'images/' + theme + '/heart.png',
-    ]);
     Resources.onReady(init);
 
     /* Assign the canvas' context object to the global variable (the window
