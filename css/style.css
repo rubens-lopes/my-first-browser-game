@@ -15,6 +15,7 @@ body {
     background-clip: content-box;
     background-size: contain;
     position: absolute;
+    background-repeat: none;
 }
 
 .keypad__button--up {
