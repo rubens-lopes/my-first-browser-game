@@ -174,7 +174,7 @@ Score.prototype.render = function () {
     this.charsToPrint.forEach(function (c) {
         var image = Resources.get(c);
         drawImage(image, ctx.canvas.width - image.width - lastWidth, 0);
-        lastWidth = image.width;
+        lastWidth += image.width;
     }, this);
 };
 Score.prototype.update = function () {
@@ -260,13 +260,6 @@ function startScene(sc, x) {
     score = new Score();
     player = allPlayers[x];
     player.toInitialPosition();
-
-    // delete selector;
-    // allPlayers.forEach(function (e, i) {
-    //     if (i !== x)
-    //         delete e;
-    // });
-    // delete allPlayers;
 
     scene = sc;
 };
