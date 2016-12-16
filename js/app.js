@@ -14,7 +14,7 @@ var Persona = function (sprite, x, lane) {
     this.flop = false;
 };
 Persona.prototype.render = function () {
-    drawImage(Resources.get(this.sprite), this.x * 101, (this.lane * 83) - 35, this.flip, this.flop);
+    drawImage(Resources.get(this.sprite), this.x * 101, (this.lane * 83) - 39, this.flip, this.flop);
 }
 Persona.prototype.xEdges = function () {
     return {
@@ -81,7 +81,7 @@ Player.prototype.toInitialPosition = function () {
 }
 Player.prototype.render = function () {
     Persona.prototype.render.call(this);
-    var sprite = Resources.get('images/' + theme + '/Heart.png');
+    var sprite = Resources.get('images/' + theme + '/heart.png');
 
     for (var i = 0; i < this.lifes; i++) {
         drawImage(sprite, i * sprite.width, 0);
@@ -207,7 +207,7 @@ var Selector = function () {
     this.speed = 4;
 }
 Selector.prototype.render = function () {
-    ctx.drawImage(Resources.get('images/' + theme + '/Selector.png') , this.x * 101, (this.y * 83) - 35);
+    ctx.drawImage(Resources.get('images/' + theme + '/selector.png') , this.x * 101, (this.y * 83) - 39);
 };
 Selector.prototype.update = function (dt) {
             if (this.x < this.finalX)

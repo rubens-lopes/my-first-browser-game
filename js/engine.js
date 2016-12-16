@@ -252,7 +252,7 @@ var Engine = (function(global) {
         'images/' + theme + '/char-horn-girl.png',
         'images/' + theme + '/char-pink-girl.png',
         'images/' + theme + '/char-princess-girl.png',
-        'images/' + theme + '/Selector.png',
+        'images/' + theme + '/selector.png',
         'images/' + theme + '/number0.png',
         'images/' + theme + '/number1.png',
         'images/' + theme + '/number2.png',
@@ -263,8 +263,7 @@ var Engine = (function(global) {
         'images/' + theme + '/number7.png',
         'images/' + theme + '/number8.png',
         'images/' + theme + '/number9.png',
-        'images/' + theme + '/textGameOver.png',
-        'images/' + theme + '/Heart.png',
+        'images/' + theme + '/heart.png',
     ]);
     Resources.onReady(init);
 

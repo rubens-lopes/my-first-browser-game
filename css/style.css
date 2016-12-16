@@ -40,33 +40,33 @@ em blockquote {
     left: 60px;
     width: 61px;
     height: 76px;
-    background-image: url('../images/shadedDark03.png');
+    background-image: url('../images/keypad-up.png');
 }
 .keypad__button--right {
     top: 60px;
     left: calc(76px + 30px);
     width: 76px;
     height: 61px;
-    background-image: url('../images/shadedDark06.png');
+    background-image: url('../images/keypad-right.png');
 }
 .keypad__button--down {
     top: calc(76px + 30px);
     left: 60px;
     width: 61px;
     height: 76px;
-    background-image: url('../images/shadedDark10.png');
+    background-image: url('../images/keypad-down.png');
 }
 .keypad__button--left {
     top: 60px;
     left: 0;
     width: 76px;
     height: 61px;
-    background-image: url('../images/shadedDark05.png');
+    background-image: url('../images/keypad-left.png');
 }
 .keypad__button--a {
     top:0;
     right: 0;
     width: 60px;
     height: 60px;
-    background-image: url('../images/shadedDark36.png');
+    background-image: url('../images/keypad-a.png');
 }
