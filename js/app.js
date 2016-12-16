@@ -1,7 +1,7 @@
 var enableCollision = true;
 var initialScore = 0;
 var initialLifes = 3;
-var theme = 'default';
+var theme = 'theme-1';
 
 /**
  *Persona
