@@ -1,7 +1,7 @@
 var enableCollision = true;
 var initialScore = 0;
 var initialLifes = 3;
-var theme = 'theme-1';
+var theme = 'default';
 
 /**
  *Persona
@@ -270,12 +270,13 @@ document.addEventListener('keyup', function(e) {
         39: 'right',
         40: 'down'
     };
-
+    console.log(e.keyCode);
     var allowedSelectorKeys = {
         37: 'left',
         39: 'right',
-        13: 'confirm',
-        32: 'confirm',
+        13: 'confirm', //return
+        32: 'confirm', //space
+        65  : 'confirm', //A
     };
 
     switch (scene) {
