@@ -67,13 +67,17 @@ var Player = function (sprite, x) {
     Persona.call(this, sprite, initialX, 5);
     this.lifes = initialLifes;
     this.initialX = initialX;
-    
+    this.finalX = this.x;
+    this.finalY = this.lane;
+    this.speed = 3;
 };
 Player.prototype = Object.create(Persona.prototype);
 Player.prototype.constructor = Player;
 Player.prototype.toInitialPosition = function () {
     this.x = 2;
     this.lane = 5;
+    this.finalX = this.x;
+    this.finalY = this.lane;
 }
 Player.prototype.render = function () {
     Persona.prototype.render.call(this);
@@ -83,29 +87,37 @@ Player.prototype.render = function () {
         drawImage(sprite, i * sprite.width, 0);
     }
 };
-Player.prototype.update = function () {
-    var p = this;
+Player.prototype.update = function (dt) {
+            if (this.x < this.finalX)
+                this.x = Math.min(this.x + (this.speed * dt), this.finalX);
+            if (this.x > this.finalX)
+                this.x = Math.max(this.x - (this.speed * dt), this.finalX);
+            if (this.lane > this.finalY)
+                this.lane = Math.max(this.lane - (this.speed * dt), this.finalY);
+            if (this.lane < this.finalY)
+                this.lane = Math.min(this.lane + (this.speed * dt), this.finalY);
+
+        var p = this;
     var pXEdges = p.xEdges();
+    if(enableCollision)    
+        allEnemies.forEach(function (e) {
+            if (p.lane === e.lane) {
+                var eXEdges = e.xEdges();
 
-if(enableCollision)    
-    allEnemies.forEach(function (e) {
-        if (p.lane === e.lane) {
-            var eXEdges = e.xEdges();
+                if ((eXEdges.end > pXEdges.start && eXEdges.end < pXEdges.end)
+                    || (eXEdges.start > pXEdges.end && eXEdges.start < pXEdges.start)) {
 
-            if ((eXEdges.end > pXEdges.start && eXEdges.end < pXEdges.end)
-                || (eXEdges.start > pXEdges.end && eXEdges.start < pXEdges.start)) {
+                    if (--p.lifes < 1) {
+                        score.clear();
+                        p.reset();
+                        return;
+                    }
+                    p.toInitialPosition();
 
-                if (--p.lifes < 1) {
-                    score.clear();
-                    p.reset();
                     return;
                 }
-                p.toInitialPosition();
-
-                return;
-               }
-        }
-    });
+            }
+        });
         
     if (p.lane === 0) {
         score.add(1);
@@ -115,32 +127,34 @@ if(enableCollision)
 Player.prototype.handleInput = function (input) {
     switch (input) {
         case 'left':
-            this.x--;
+            this.finalX--;
             break;
         case 'up':
-            this.lane--;
+            this.finalY--;
             break;
         case 'right':
-            this.x++;
+            this.finalX++;
             break;
         case 'down':
-            this.lane++;
+            this.finalY++;
             break;
     }
 
-    if (this.x < 0)
-        this.x = 0; 
-    if (this.x > 4)
-        this.x = 4; 
-    if (this.lane < 0)
-        this.lane = 0;
-    if (this.lane > 5)
-        this.lane = 5;
+    if (this.finalX < 0)
+        this.finalX = 0; 
+    if (this.finalX > 4)
+        this.finalX = 4; 
+    if (this.finalY < 0)
+        this.finalY = 0;
+    if (this.finalY > 5)
+        this.finalY = 5;
 };
 Player.prototype.reset = function () {
     this.lifes = initialLifes;
     this.x = this.initialX;
     this.lane = 5;
+    this.finalX = this.x;
+    this.finalY = this.lane;
     scene = 'playerSelection';
 };
 
@@ -187,31 +201,39 @@ Score.prototype.add = function (points) {
  *Selector
  */
 var Selector = function () {
-    this.x = 0;
+    this.x = 2;
     this.y = 5;
+    this.finalX = this.x;
+    this.speed = 4;
 }
 Selector.prototype.render = function () {
     ctx.drawImage(Resources.get('images/' + theme + '/Selector.png') , this.x * 101, (this.y * 83) - 35);
 };
-
+Selector.prototype.update = function (dt) {
+            if (this.x < this.finalX)
+                this.x = Math.min(this.x + (this.speed * dt), this.finalX);
+            if (this.x > this.finalX)
+                this.x = Math.max(this.x - (this.speed * dt), this.finalX);
+};
 Selector.prototype.handleInput = function (input) {
     switch (input) {
         case 'left':
-            this.x--;
+            this.finalX--;
             break;
         case 'right':
-            this.x++;
+            this.finalX++;
             break;
         case 'confirm':
-            startScene('main', this.x);    
+            startScene('main', this.finalX);    
             break;
     }
 
-    if (this.x < 0)
-        this.x = 0; 
-    if (this.x > 4)
-        this.x = 4; 
+    if (this.finalX < 0)
+        this.finalX = 0; 
+    if (this.finalX > 4)
+        this.finalX = 4; 
 };
+
 /**
  *Init & helpers
  */

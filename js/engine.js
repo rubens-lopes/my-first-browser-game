@@ -83,6 +83,9 @@ var Engine = (function(global) {
             case 'main':
                 updateEntities(dt);
                 break;
+            case 'playerSelection':
+                selector.update(dt);
+                break;
         }
     }
     /* This is called by the update function and loops through all of the
@@ -96,7 +99,7 @@ var Engine = (function(global) {
         allEnemies.forEach(function(enemy) {
             enemy.update(dt);
         });
-        player.update();
+        player.update(dt);
         score.update();
     }
 
