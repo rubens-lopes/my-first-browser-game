@@ -5,6 +5,8 @@ var theme = 'default';
 var themes = [
     {id: 'default', name: 'Default' },
     {id: 'sepia', name: 'Sepia' },
+	{id: 'plantonista', name: 'Plantonista' },
+	{id: 'zelda', name: 'Zelda' },
     // {id: 'theme-1', name: 'Theme 1' },
 ];
 /**
